@@ -1,26 +1,31 @@
 const readlineSync = require("readline-sync");
 
+// Classe représentant un joueur
 class Player {
   constructor(name) {
-    this.name = name;
-    this.scores = [];
+    this.name = name; // Nom du joueur
+    this.scores = []; // Tableau pour stocker les scores
   }
 
+  // Méthode pour ajouter un score
   addScore(score) {
     this.scores.push(score);
   }
 
+  // Méthode pour calculer le score total
   getTotalScore() {
     return this.scores.reduce((total, score) => total + score, 0);
   }
 }
 
+// Classe principale du jeu de bowling
 class BowlingGame {
   constructor() {
-    this.players = [];
-    this.currentFrame = 1;
+    this.players = []; // Tableau pour stocker les joueurs
+    this.currentFrame = 1; // Numéro du frame en cours
   }
 
+  // Méthode pour ajouter un joueur
   addPlayer(name) {
     if (this.players.length >= 6) {
       console.log("Le nombre maximum de joueurs est atteint.");
@@ -30,66 +35,50 @@ class BowlingGame {
     this.players.push(player);
   }
 
+  // Méthode pour valider le nom du joueur
   validateName(name) {
     const alphanumericRegex = /^[a-zA-Z0-9]+$/;
     return alphanumericRegex.test(name);
   }
 
+  // Méthode pour jouer un frame
   playFrame() {
     console.log(`Frame ${this.currentFrame}:`);
     for (const player of this.players) {
-      let validScore = false;
-      while (!validScore) {
-        let score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
-        if (score1 > 10) {
-          console.log("Erreur : Le nombre de quilles renversées ne peut pas dépasser 10.");
-          continue;
-        }
-        player.addScore(score1);
-        validScore = true;
+      console.log(`Tour du joueur ${player.name}`);
+      let score1 = parseInt(readlineSync.question("Score du premier lancer: "));
+      while (isNaN(score1) || score1 < 0 || score1 > 10) {
+        console.log("Veuillez entrer un nombre entre 0 et 10.");
+        score1 = parseInt(readlineSync.question("Score du premier lancer: "));
+      }
+      player.addScore(score1);
 
-        if (score1 === 10) {
-          console.log("Strike !");
-          if (this.currentFrame === 10) {
-            const extraScore1 = parseInt(readlineSync.question(`Score du premier lancer supplémentaire pour ${player.name}: `));
-            player.addScore(extraScore1);
-            if (extraScore1 === 10) {
-              console.log("Strike supplémentaire !");
-              const extraScore2 = parseInt(readlineSync.question(`Score du deuxième lancer supplémentaire pour ${player.name}: `));
-              player.addScore(extraScore2);
-            }
-          }
-          break;
-        }
-
-        let score2;
-        while (true) {
-          score2 = parseInt(readlineSync.question(`Score du deuxième lancer pour ${player.name}: `));
-          if (score1 + score2 > 10) {
-            console.log("Erreur : Le nombre total de quilles renversées ne peut pas dépasser 10.");
-            continue;
-          }
-          break;
+      if (score1 === 10) {
+        console.log("Strike !");
+        player.addScore(20); // Ajoute 20 points pour le strike
+      } else {
+        let score2 = parseInt(readlineSync.question("Score du deuxième lancer: "));
+        while (isNaN(score2) || score2 < 0 || score2 > 10 || score1 + score2 > 10) {
+          console.log("Veuillez entrer un nombre entre 0 et " + (10 - score1));
+          score2 = parseInt(readlineSync.question("Score du deuxième lancer: "));
         }
         player.addScore(score2);
 
         if (score1 + score2 === 10) {
           console.log("Spare !");
-          if (this.currentFrame === 10) {
-            const extraScore = parseInt(readlineSync.question(`Score du lancer supplémentaire pour ${player.name}: `));
-            player.addScore(extraScore);
-          }
+          player.addScore(10); // Ajoute 10 points pour le spare
         }
       }
     }
   }
 
+  // Méthode pour jouer une partie complète
   playGame() {
     let numPlayers = NaN;
     while (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 6) {
       numPlayers = parseInt(readlineSync.question("Nombre de joueurs (1-6): "));
       if (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 6) {
-        console.log("Veuillez entrer un nombre de joueurs valide (entre 1 et 6).");
+        console.log("Veuillez entrer un nombre valide de joueurs (entre 1 et 6).");
       }
     }
 
@@ -116,6 +105,7 @@ class BowlingGame {
     this.displayScores();
   }
 
+  // Méthode pour afficher les scores finaux et le gagnant
   displayScores() {
     console.log("\nRésultats finaux:");
     let maxScore = 0;
@@ -141,8 +131,8 @@ class BowlingGame {
       }
     }
 
-    if (maxScore === 300) {
-      console.log("\nFélicitations ! Vous avez atteint le score parfait de 300 points !");
+    if (maxScore >= 300) {
+      console.log("\nFélicitations! Vous avez atteint le score parfait!");
     }
   }
 }
