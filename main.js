@@ -44,7 +44,16 @@ class BowlingGame {
         validScore = true;
 
         if (score1 === 10) {
-          console.log("Strike dans les tours jumelles!");
+          console.log("Strike !");
+          if (this.currentFrame === 10) {
+            const extraScore1 = parseInt(readlineSync.question(`Score du premier lancer supplémentaire pour ${player.name}: `));
+            player.addScore(extraScore1);
+            if (extraScore1 === 10) {
+              console.log("Strike supplémentaire !");
+              const extraScore2 = parseInt(readlineSync.question(`Score du deuxième lancer supplémentaire pour ${player.name}: `));
+              player.addScore(extraScore2);
+            }
+          }
           break;
         }
 
@@ -60,7 +69,11 @@ class BowlingGame {
         player.addScore(score2);
 
         if (score1 + score2 === 10) {
-          console.log("Spare sa mere!");
+          console.log("Spare !");
+          if (this.currentFrame === 10) {
+            const extraScore = parseInt(readlineSync.question(`Score du lancer supplémentaire pour ${player.name}: `));
+            player.addScore(extraScore);
+          }
         }
       }
     }
@@ -105,7 +118,7 @@ class BowlingGame {
     }
 
     if (winners.length === 1) {
-      console.log(`\nLe gagnant est ${winners[0]}!`);
+      console.log(`\nLe gagnant est ${winners[0]} !`);
     } else {
       console.log("\nÉgalité! Les gagnants sont:");
       for (const winner of winners) {
