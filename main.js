@@ -38,21 +38,9 @@ class BowlingGame {
   playFrame() {
     console.log(`Frame ${this.currentFrame}:`);
     for (const player of this.players) {
-      let validName = false;
-      let playerName;
-      while (!validName) {
-        playerName = readlineSync.question(`Nom du joueur: `);
-        if (!this.validateName(playerName)) {
-          console.log("Erreur : Le nom du joueur doit comporter au moins un caractère alphanumérique.");
-        } else {
-          validName = true;
-          player.name = playerName;
-        }
-      }
-
       let validScore = false;
       while (!validScore) {
-        const score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
+        let score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
         if (score1 > 10) {
           console.log("Erreur : Le nombre de quilles renversées ne peut pas dépasser 10.");
           continue;
@@ -120,6 +108,7 @@ class BowlingGame {
     }
 
     while (this.currentFrame <= 10) {
+      console.log();
       this.playFrame();
       this.currentFrame++;
     }
