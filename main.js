@@ -30,9 +30,26 @@ class BowlingGame {
     this.players.push(player);
   }
 
+  validateName(name) {
+    const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+    return alphanumericRegex.test(name);
+  }
+
   playFrame() {
     console.log(`Frame ${this.currentFrame}:`);
     for (const player of this.players) {
+      let validName = false;
+      let playerName;
+      while (!validName) {
+        playerName = readlineSync.question(`Nom du joueur: `);
+        if (!this.validateName(playerName)) {
+          console.log("Erreur : Le nom du joueur doit comporter au moins un caractère alphanumérique.");
+        } else {
+          validName = true;
+          player.name = playerName;
+        }
+      }
+
       let validScore = false;
       while (!validScore) {
         const score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
@@ -80,17 +97,26 @@ class BowlingGame {
   }
 
   playGame() {
-    let numPlayers = 0;
-    while (numPlayers < 1 || numPlayers > 6) {
+    let numPlayers = NaN;
+    while (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 6) {
       numPlayers = parseInt(readlineSync.question("Nombre de joueurs (1-6): "));
-      if (numPlayers < 1 || numPlayers > 6) {
+      if (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 6) {
         console.log("Veuillez entrer un nombre de joueurs valide (entre 1 et 6).");
       }
     }
 
     for (let i = 0; i < numPlayers; i++) {
-      const name = readlineSync.question(`Nom du joueur ${i + 1}: `);
-      this.addPlayer(name);
+      let validName = false;
+      let playerName;
+      while (!validName) {
+        playerName = readlineSync.question(`Nom du joueur ${i + 1}: `);
+        if (!this.validateName(playerName)) {
+          console.log("Erreur : Le nom du joueur doit comporter au moins un caractère alphanumérique.");
+        } else {
+          validName = true;
+          this.addPlayer(playerName);
+        }
+      }
     }
 
     while (this.currentFrame <= 10) {
@@ -124,6 +150,10 @@ class BowlingGame {
       for (const winner of winners) {
         console.log(winner);
       }
+    }
+
+    if (maxScore === 300) {
+      console.log("\nFélicitations ! Vous avez atteint le score parfait de 300 points !");
     }
   }
 }
