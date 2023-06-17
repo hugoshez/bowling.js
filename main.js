@@ -33,31 +33,35 @@ class BowlingGame {
   playFrame() {
     console.log(`Frame ${this.currentFrame}:`);
     for (const player of this.players) {
-      const score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
-      if (score1 > 10) {
-        console.log("Erreur : Le nombre de quilles renversées ne peut pas dépasser 10.");
-        return;
-      }
-      player.addScore(score1);
-
-      if (score1 === 10) {
-        console.log("Strike !");
-        console.log("STRIKE DANS LES TOURS JUMELLES !!!")
+      let validScore = false;
+      while (!validScore) {
+        const score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
+        if (score1 > 10) {
+          console.log("Erreur : Le nombre de quilles renversées ne peut pas dépasser 10.");
+          continue;
+        }
         player.addScore(score1);
-        continue;
-      }
+        validScore = true;
 
-      const score2 = parseInt(readlineSync.question(`Score du deuxième lancer pour ${player.name}: `));
-      if (score1 + score2 > 10) {
-        console.log("Erreur : Le nombre total de quilles renversées ne peut pas dépasser 10.");
-        return;
-      }
-      player.addScore(score2);
+        if (score1 === 10) {
+          console.log("Strike !");
+          break;
+        }
 
-      if (score1 + score2 === 10) {
-        console.log("Spare !");
-        console.log("SPARE SA MERE")
-        player.addScore(score1);
+        let score2;
+        while (true) {
+          score2 = parseInt(readlineSync.question(`Score du deuxième lancer pour ${player.name}: `));
+          if (score1 + score2 > 10) {
+            console.log("Erreur : Le nombre total de quilles renversées ne peut pas dépasser 10.");
+            continue;
+          }
+          break;
+        }
+        player.addScore(score2);
+
+        if (score1 + score2 === 10) {
+          console.log("Spare !");
+        }
       }
     }
   }
