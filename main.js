@@ -42,6 +42,8 @@ class BowlingGame {
 
       if (score1 === 10) {
         console.log("Strike !");
+        console.log("STRIKE DANS LES TOURS JUMELLES !!!")
+        player.addScore(score1);
         continue;
       }
 
@@ -54,6 +56,8 @@ class BowlingGame {
 
       if (score1 + score2 === 10) {
         console.log("Spare !");
+        console.log("SPARE SA MERE")
+        player.addScore(score1);
       }
     }
   }
