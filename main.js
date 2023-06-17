@@ -1,173 +1,92 @@
-import { createInterface } from 'readline';
+const readlineSync = require("readline-sync");
 
 class Player {
   constructor(name) {
     this.name = name;
-    this.frames = [];
+    this.scores = [];
   }
 
-  addFrame(frame) {
-    this.frames.push(frame);
+  addScore(score) {
+    this.scores.push(score);
   }
 
-  calculateScore() {
-    let score = 0;
-    let frameIndex = 0;
-
-    for (let frame = 0; frame < 10; frame++) {
-      const currentFrame = this.frames[frameIndex];
-
-      if (isStrike(currentFrame)) {
-        score += 10 + getStrikeBonus(frameIndex);
-        frameIndex += 1;
-      } else if (isSpare(currentFrame)) {
-        score += 10 + getSpareBonus(frameIndex);
-        frameIndex += 2;
-      } else {
-        score += getFrameScore(frameIndex);
-        frameIndex += 2;
-      }
-    }
-
-    return score;
+  getTotalScore() {
+    return this.scores.reduce((total, score) => total + score, 0);
   }
 }
 
-function isStrike(frame) {
-  return frame[0] === 10;
-}
+class BowlingGame {
+  constructor() {
+    this.players = [];
+    this.currentFrame = 1;
+  }
 
-function isSpare(frame) {
-  return frame[0] + frame[1] === 10;
-}
-
-function getStrikeBonus(frameIndex) {
-  return players.reduce((bonus, player) => {
-    const nextFrame = player.frames[frameIndex + 1];
-    const secondNextFrame = player.frames[frameIndex + 2];
-    return bonus + nextFrame[0] + (nextFrame[1] || secondNextFrame[0]);
-  }, 0);
-}
-
-function getSpareBonus(frameIndex) {
-  return players.reduce((bonus, player) => {
-    const nextFrame = player.frames[frameIndex + 1];
-    return bonus + nextFrame[0];
-  }, 0);
-}
-
-function getFrameScore(frameIndex) {
-  return players.reduce((frameScore, player) => {
-    const frame = player.frames[frameIndex];
-    return frameScore + frame[0] + frame[1];
-  }, 0);
-}
-
-function startGame() {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  rl.question("Enter the number of players (between 1 and 6): ", (numPlayers) => {
-    if (numPlayers < 1 || numPlayers > 6) {
-      console.log("Invalid number of players!");
-      rl.close();
+  addPlayer(name) {
+    if (this.players.length >= 6) {
+      console.log("Le nombre maximum de joueurs est atteint.");
       return;
     }
-
-    players = [];
-    getPlayerNames(rl, numPlayers, 1);
-  });
-}
-
-function getPlayerNames(rl, numPlayers, currentPlayer) {
-  if (currentPlayer <= numPlayers) {
-    rl.question(`Enter the name of player ${currentPlayer}: `, (name) => {
-      players.push(new Player(name));
-      getPlayerNames(rl, numPlayers, currentPlayer + 1);
-    });
-  } else {
-    rl.close();
-    playFrames();
+    const player = new Player(name);
+    this.players.push(player);
   }
-}
 
-function playFrames() {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
+  playFrame() {
+    console.log(`Frame ${this.currentFrame}:`);
+    for (const player of this.players) {
+      const score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
+      if (score1 === 10) {
+        player.addScore(score1);
+        continue;
+      }
+      const score2 = parseInt(readlineSync.question(`Score du deuxieme lancer pour ${player.name}: `));
+      if (score1 + score2 === 10) {
+        player.addScore(score1);
+      }
+      player.addScore(score1 + score2);
+    }
+  }
 
-  let currentPlayerIndex = 0;
-  let currentFrameIndex = 0;
-
-  function playFrame() {
-    if (currentFrameIndex >= 10) {
-      rl.close();
-      displayResults();
-      return;
+  playGame() {
+    const numPlayers = parseInt(readlineSync.question("Nombre de joueurs (1-6): "));
+    for (let i = 0; i < numPlayers; i++) {
+      const name = readlineSync.question(`Nom du joueur ${i + 1}: `);
+      this.addPlayer(name);
     }
 
-    const currentPlayer = players[currentPlayerIndex];
+    while (this.currentFrame <= 10) {
+      this.playFrame();
+      this.currentFrame++;
+    }
 
-    rl.question(`Enter the number of knocked pins for ${currentPlayer.name} in frame ${currentFrameIndex + 1}: `, (input) => {
-      const knockedPins = parseInt(input, 10);
-
-      if (isNaN(knockedPins) || knockedPins < 0 || knockedPins > 10) {
-        console.log("Invalid input! Please enter a number between 0 and 10.");
-        playFrame();
-        return;
-      }
-
-      const frameScore = [knockedPins];
-
-      if (knockedPins === 10) { // Strike
-        currentPlayer.addFrame(frameScore);
-        currentFrameIndex++;
-      } else {
-        rl.question(`Enter the number of knocked pins for ${currentPlayer.name} in the second roll of frame ${currentFrameIndex + 1}: `, (input) => {
-          const secondRollPins = parseInt(input, 10);
-
-          if (isNaN(secondRollPins) || secondRollPins < 0 || (knockedPins + secondRollPins) > 10) {
-            console.log("Invalid input! Please enter a number between 0 and " + (10 - knockedPins) + ".");
-            playFrame();
-            return;
-          }
-
-          frameScore.push(secondRollPins);
-          currentPlayer.addFrame(frameScore);
-          currentFrameIndex++;
-        });
-      }
-
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-      playFrame();
-    });
+    this.displayScores();
   }
 
-  playFrame();
-}
+  displayScores() {
+    console.log("\nRésultats finaux:");
+    let maxScore = 0;
+    let winners = [];
 
-function displayResults() {
-  players.forEach(player => {
-    const score = player.calculateScore();
-    console.log(`${player.name}: ${score} points`);
-  });
+    for (const player of this.players) {
+      const totalScore = player.getTotalScore();
+      console.log(`${player.name}: ${totalScore}`);
+      if (totalScore > maxScore) {
+        maxScore = totalScore;
+        winners = [player.name];
+      } else if (totalScore === maxScore) {
+        winners.push(player.name);
+      }
+    }
 
-  const winners = getWinners();
-  if (winners.length === 1) {
-    console.log(`The winner is ${winners[0].name}!`);
-  } else {
-    console.log("It's a tie! The winners are:");
-    winners.forEach(winner => console.log(winner.name));
+    if (winners.length === 1) {
+      console.log(`\nLe gagnant est ${winners[0]}!`);
+    } else {
+      console.log("\nÉgalité! Les gagnants sont:");
+      for (const winner of winners) {
+        console.log(winner);
+      }
+    }
   }
 }
 
-function getWinners() {
-  const maxScore = Math.max(...players.map(player => player.calculateScore()));
-  return players.filter(player => player.calculateScore() === maxScore);
-}
-
-let players = [];
-startGame();
+const game = new BowlingGame();
+game.playGame();
