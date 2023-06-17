@@ -35,13 +35,13 @@ class BowlingGame {
     for (const player of this.players) {
       const score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
       if (score1 === 10) {
-        console.log("STRIKE SA DARONNE!")
+        console.log("STRIKE DANS LES TOURS JUMELLES !!!")
         player.addScore(score1);
         continue;
       }
       const score2 = parseInt(readlineSync.question(`Score du deuxieme lancer pour ${player.name}: `));
       if (score1 + score2 === 10) {
-        console.log("AF SPARE EN DIRECTION DES TOURS JUMELLES")
+        console.log("SPARE SA MERE")
         player.addScore(score1);
       }
       player.addScore(score1 + score2);
