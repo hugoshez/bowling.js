@@ -34,22 +34,39 @@ class BowlingGame {
     console.log(`Frame ${this.currentFrame}:`);
     for (const player of this.players) {
       const score1 = parseInt(readlineSync.question(`Score du premier lancer pour ${player.name}: `));
+      if (score1 > 10) {
+        console.log("Erreur : Le nombre de quilles renversées ne peut pas dépasser 10.");
+        return;
+      }
+      player.addScore(score1);
+
       if (score1 === 10) {
-        console.log("STRIKE SA DARONNE!")
-        player.addScore(score1);
+        console.log("Strike !");
         continue;
       }
-      const score2 = parseInt(readlineSync.question(`Score du deuxieme lancer pour ${player.name}: `));
-      if (score1 + score2 === 10) {
-        console.log("AF SPARE EN DIRECTION DES TOURS JUMELLES")
-        player.addScore(score1);
+
+      const score2 = parseInt(readlineSync.question(`Score du deuxième lancer pour ${player.name}: `));
+      if (score1 + score2 > 10) {
+        console.log("Erreur : Le nombre total de quilles renversées ne peut pas dépasser 10.");
+        return;
       }
-      player.addScore(score1 + score2);
+      player.addScore(score2);
+
+      if (score1 + score2 === 10) {
+        console.log("Spare !");
+      }
     }
   }
 
   playGame() {
-    const numPlayers = parseInt(readlineSync.question("Nombre de joueurs (1-6): "));
+    let numPlayers = 0;
+    while (numPlayers < 1 || numPlayers > 6) {
+      numPlayers = parseInt(readlineSync.question("Nombre de joueurs (1-6): "));
+      if (numPlayers < 1 || numPlayers > 6) {
+        console.log("Veuillez entrer un nombre de joueurs valide (entre 1 et 6).");
+      }
+    }
+
     for (let i = 0; i < numPlayers; i++) {
       const name = readlineSync.question(`Nom du joueur ${i + 1}: `);
       this.addPlayer(name);
