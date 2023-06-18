@@ -72,7 +72,7 @@ class BowlingGame {
         // Vérification d'un spare
         if (score1 + score2 === 10) {
           console.log("Spare !");
-          player.addScore(10); // Ajoute 10 points pour le spare
+          player.addScore(5); // Ajoute 5 points pour le spare
         }
       }
     }
@@ -125,7 +125,7 @@ class BowlingGame {
             if (extraScore1 != 10) {
               player.addScore(extraScore1); 
             } else {
-              console.log("Strike !");
+              console.log("STRIKE DANS LES TOURS JUMELLES!");
               // Saisie du score du deuxième lancer supplémentaire
               let extraScore2 = parseInt(readlineSync.question("Score du deuxieme lancer supplementaire: "));
               while (isNaN(extraScore2) || extraScore2 < 0 || extraScore2 > 10) {
