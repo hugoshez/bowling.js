@@ -1,3 +1,4 @@
+// Importation du module readline-sync pour permettre la saisie utilisateur
 const readlineSync = require("readline-sync");
 
 // Classe représentant un joueur
@@ -46,6 +47,8 @@ class BowlingGame {
     console.log(`Frame ${this.currentFrame}:`);
     for (const player of this.players) {
       console.log(`Tour du joueur ${player.name}`);
+
+      // Saisie du score du premier lancer
       let score1 = parseInt(readlineSync.question("Score du premier lancer: "));
       while (isNaN(score1) || score1 < 0 || score1 > 10) {
         console.log("Veuillez entrer un nombre entre 0 et 10.");
@@ -53,17 +56,20 @@ class BowlingGame {
       }
       player.addScore(score1);
 
+      // Vérification d'un strike
       if (score1 === 10) {
         console.log("Strike !");
-        player.addScore(20); // Ajoute 20 points pour le strike
+        player.addScore(10); // Ajoute 10 points pour le strike
       } else {
+        // Saisie du score du deuxième lancer
         let score2 = parseInt(readlineSync.question("Score du deuxième lancer: "));
         while (isNaN(score2) || score2 < 0 || score2 > 10 || score1 + score2 > 10) {
-          console.log("Veuillez entrer un nombre entre 0 et " + (10 - score1));
+          console.log("Veuillez entrer un nombre entre 0 et 10.");
           score2 = parseInt(readlineSync.question("Score du deuxième lancer: "));
         }
         player.addScore(score2);
 
+        // Vérification d'un spare
         if (score1 + score2 === 10) {
           console.log("Spare !");
           player.addScore(10); // Ajoute 10 points pour le spare
@@ -99,6 +105,39 @@ class BowlingGame {
     while (this.currentFrame <= 10) {
       console.log();
       this.playFrame();
+
+      // Vérification du dixième frame
+      if (this.currentFrame === 10) {
+        for (const player of this.players) {
+          // Si le joueur a fait un spare ou un strike, il a droit à un ou deux lancers supplémentaires, respectivement
+          if (player.scores[player.scores.length - 1] === 10 || player.scores[player.scores.length - 2] === 10) {
+            console.log(`Lancers supplémentaires pour le joueur ${player.name}:`);
+
+            // Saisie du score du premier lancer supplémentaire
+            let extraScore1 = parseInt(readlineSync.question("Score du premier lancer supplementaire: "));
+            while (isNaN(extraScore1) || extraScore1 < 0 || extraScore1 > 10) {
+              console.log("Veuillez entrer un nombre entre 0 et 10.");
+              extraScore1 = parseInt(readlineSync.question("Score du premier lancer supplementaire: "));
+            }
+            player.addScore(extraScore1);
+
+            // Vérification d'un strike au premier lancer supplémentaire
+            if (extraScore1 != 10) {
+              player.addScore(extraScore1); 
+            } else {
+              console.log("Strike !");
+              // Saisie du score du deuxième lancer supplémentaire
+              let extraScore2 = parseInt(readlineSync.question("Score du deuxieme lancer supplementaire: "));
+              while (isNaN(extraScore2) || extraScore2 < 0 || extraScore2 > 10) {
+                console.log("Veuillez entrer un nombre entre 0 et 10.");
+                extraScore2 = parseInt(readlineSync.question("Score du deuxieme lancer supplementaire: "));
+              }
+              player.addScore(extraScore2);
+            }
+          }
+        }
+      }
+
       this.currentFrame++;
     }
 
@@ -130,12 +169,9 @@ class BowlingGame {
         console.log(winner);
       }
     }
-
-    if (maxScore >= 300) {
-      console.log("\nFélicitations! Vous avez atteint le score parfait!");
-    }
   }
 }
 
+// Création d'une instance du jeu et démarrage de la partie
 const game = new BowlingGame();
 game.playGame();
