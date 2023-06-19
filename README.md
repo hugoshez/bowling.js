@@ -1,5 +1,12 @@
 # bowling.js
 
+Le but de ce projet est de mettre en place un bowling jouable dans le terminal en JavaScript.
+Le joueur devra choisir le nombre de participants (1 à 6),
+le nom des joueurs,
+et la partie va commencer,
+voici un exemple de partie :
+
+
 Démarrez une nouvelle partie de bowling
 Entrez le nombre de joueurs: 2
 Entrez le nom du joueur 1: Théau
@@ -25,3 +32,10 @@ Score final:
 Théau: 123
 Hugo: 117
 Théau est le gagnant !!!
+
+La partie est maintenant terminée.
+lorsqu'un joueur fait un spare,
+il gagne 5 points sur le lancer d'après,
+et s'il fait un strike,
+il gagne alors 10 points sur le lancer d'après.
+Le joueur pourra ensuite avoir l'historique des scores.
