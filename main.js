@@ -58,20 +58,20 @@ class BowlingGame {
 
       // Vérification d'un strike
       if (score1 === 10) {
-        console.log("Strike !");
+        console.log("Strike dans les tours jumelles !!!");
         player.addScore(10); // Ajoute 10 points pour le strike
       } else {
         // Saisie du score du deuxième lancer
-        let score2 = parseInt(readlineSync.question("Score du deuxième lancer: "));
+        let score2 = parseInt(readlineSync.question("Score du deuxieme lancer: "));
         while (isNaN(score2) || score2 < 0 || score2 > 10 || score1 + score2 > 10) {
           console.log("Veuillez entrer un nombre entre 0 et 10.");
-          score2 = parseInt(readlineSync.question("Score du deuxième lancer: "));
+          score2 = parseInt(readlineSync.question("Score du deuxieme lancer: "));
         }
         player.addScore(score2);
 
         // Vérification d'un spare
         if (score1 + score2 === 10) {
-          console.log("Spare !");
+          console.log("Spare dans ta mere !!!");
           player.addScore(5); // Ajoute 5 points pour le spare
         }
       }
@@ -94,7 +94,7 @@ class BowlingGame {
       while (!validName) {
         playerName = readlineSync.question(`Nom du joueur ${i + 1}: `);
         if (!this.validateName(playerName)) {
-          console.log("Erreur : Le nom du joueur doit comporter au moins un caractère alphanumérique.");
+          console.log("Erreur : Le nom du joueur doit comporter au moins un caractere alphanumerique.");
         } else {
           validName = true;
           this.addPlayer(playerName);
@@ -111,7 +111,7 @@ class BowlingGame {
         for (const player of this.players) {
           // Si le joueur a fait un spare ou un strike, il a droit à un ou deux lancers supplémentaires, respectivement
           if (player.scores[player.scores.length - 1] === 10 || player.scores[player.scores.length - 2] === 10) {
-            console.log(`Lancers supplémentaires pour le joueur ${player.name}:`);
+            console.log(`Lancers supplementaires pour le joueur ${player.name}:`);
 
             // Saisie du score du premier lancer supplémentaire
             let extraScore1 = parseInt(readlineSync.question("Score du premier lancer supplementaire: "));
@@ -146,7 +146,7 @@ class BowlingGame {
 
   // Méthode pour afficher les scores finaux et le gagnant
   displayScores() {
-    console.log("\nRésultats finaux:");
+    console.log("\nResultats finaux:");
     let maxScore = 0;
     let winners = [];
 
@@ -164,7 +164,7 @@ class BowlingGame {
     if (winners.length === 1) {
       console.log(`\nLe gagnant est ${winners[0]} !`);
     } else {
-      console.log("\nÉgalité! Les gagnants sont:");
+      console.log("\nEgalite ! Les gagnants sont:");
       for (const winner of winners) {
         console.log(winner);
       }
